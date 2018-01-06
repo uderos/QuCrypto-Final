@@ -4,6 +4,21 @@
 #############################################################################
 
 from SimulaQron.cqc.pythonLib.cqc import *
+import random
+
+
+def get_exercise_params():
+	n = 8 # number of qbits
+	return [ n ]
+
+
+def generate_random_bits(n):
+	bit_list = []
+	for i in list(range(n)):
+		x = random.randint(0,1)
+		bit_list.append(x)
+	return bit_list
+		
 
 def create_bb84_single_state(cqcc, x, theta):
 	""" Create a qbit in the specified BB84 state.
@@ -45,12 +60,11 @@ def create_bb84_states(cqcc, x_list, theta_list):
 	qbit_list = []
 	if not size(x_list) == size(theta_list):
 		raise RuntimeError("create_bb84_states size mismatch: {}:{}".format(
-			size(x_list), size(theta_list))
-	for i in list(range(size(x_list))):
+			size(x_list), size(theta_list)))
+	for i in range(size(x_list)):
 		q = create_bb84_single_state(cqcc, x_list[i], theta_list[i])
 		qbit.append(q)
 	return qbit_list
-
 
 
 #############################################################################
