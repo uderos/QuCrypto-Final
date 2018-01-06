@@ -13,7 +13,8 @@ class CommId(Enum):
 class ProtocolResult(Enum):
 	Success = 1,
 	BasisCheckFailure = 2,
-	ErrorCheckFailure = 3
+	ErrorCheckFailure = 3,
+	NoBitsAfterErrorCheck = 4
 
 
 def get_exercise_params():
@@ -124,6 +125,14 @@ def generate_sublist_from_idx(full_list, idx_sublist):
 	for i in idx_sublist:
 		l.append(full_list[i])
 	return l
+
+def generate_sublist_removing_idx(full_list, idx_sublist):
+	tag = "TAG"
+	l1 = list(full_list)
+	for i in idx_sublist:
+		l[i] = tag
+	l2 = [e in l1 if not e == tag]
+	return l2
 
 def print_result(player, rc):
 	print("{} protocol result: {}".format(who, rc))

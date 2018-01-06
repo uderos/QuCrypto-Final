@@ -53,6 +53,16 @@ def run_protocol(Alice):
 		print("Alice: Error check failure: {}:{}".format(xt_alice, xt_bob))
 		return udr.ProtocolResult.ErrorCheckFailure 
 
+	# Remove test bits from bit string
+	x2 = udr.generate_sublist_removing_idx(x1, idx_test_list):
+	n1 = size(x2)
+	if not x2 > 0:
+		print("Alice: only %d bits left after error check" % n1)
+		return udr.ProtocolResult.NoBitsAfterErrorCheck
+
+	# We are done !
+	return [udr.ProtocolResult.NoBitsAfterErrorCheck, x2]
+
 
 
 #####################################################################################################
