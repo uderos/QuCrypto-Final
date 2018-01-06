@@ -28,11 +28,22 @@ def test2():
 	print("lbegin={} lend={}".format(lbegin, lend))
 	test_assert(lend == [0, 2, 4])
 
+def test3():
+	print("test3() - BEGIN")
+	list_size = 32
+	sublist_size = 16
+	l = udr.generate_random_indexes(list_size, sublist_size)
+	print("l={}".format(l))
+	for e in l:
+		test_assert(e < sublist_size)
+
+
 def main():
 	Eve=CQCConnection("Eve")
 
 	test1()
 	test2()
+	test3()
 
 	Eve.close()
 
