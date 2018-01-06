@@ -26,7 +26,7 @@ def run_protocol(Bob):
 
 	#Discard bits measured in different basis
 	x1 = udr.discard_bits(x, theta_list_alice, theta_list_bob):
-	n1 = size(x1)
+	n1 = len(x1)
 	if not n1 > 1:
 		print("Bob: only %d bits left after basis check" % n1)
 		return udr.ProtocolResult.BasisCheckFailure 
@@ -36,7 +36,7 @@ def run_protocol(Bob):
 	xt_alice = Bob.recvClassical()
 
 	# Generate the test list and send it to Alice
-	nt = size(idx_test_list)
+	nt = len(idx_test_list)
 	xt_bob = generate_sublist_from_idx(x1, idx_test_list)
 	Bob.sendClassical("Alice", xt_bob)
 
@@ -47,7 +47,7 @@ def run_protocol(Bob):
 
 	# Remove test bits from bit string
 	x2 = udr.generate_sublist_removing_idx(x1, idx_test_list):
-	n2 = size(x2)
+	n2 = len(x2)
 	if not x2 > 0:
 		print("Alice: only %d bits left after error check" % n1)
 		return udr.ProtocolResult.NoBitsAfterErrorCheck

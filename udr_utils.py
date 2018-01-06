@@ -44,14 +44,14 @@ def measure_single_bb84_qbit(qbit, theta):
 		return qbit.measure()
 	if theta == 1:
 		return qbit.H().measure()
-	raise RuntimeError("Invalid theta value: {}."format(theta))
+	raise RuntimeError("Invalid theta value: {}".format(theta))
 	
 def measure_bb84_qbit_list(qbit_list, theta_list):
-	if not size(qbit_list) == size(theta_list):
-	raise RuntimeError("Size mismatch: {}:{}".format(
-		size(qbit_list), size(theta_list)))
+	if not len(qbit_list) == len(theta_list):
+		raise RuntimeError("Size mismatch: {}:{}".format(
+			len(qbit_list), len(theta_list)))
 	meas_list = []
-	for i in range(size(qbit_list)):
+	for i in range(len(qbit_list)):
 		m = measure_single_bb84_qbit(qbit_list[i], theta_list[i])
 		meas_list.append(m)
 	return meas_list
@@ -95,23 +95,23 @@ def create_bb84_states(cqcc, x_list, theta_list):
 			theta_list:	the basis to be used to encode the classical bits
 	"""
 	qbit_list = []
-	if not size(x_list) == size(theta_list):
-		raise RuntimeError("create_bb84_states size mismatch: {}:{}".format(
-			size(x_list), size(theta_list)))
-	for i in range(size(x_list)):
+	if not len(x_list) == len(theta_list):
+		raise RuntimeError("create_bb84_states len mismatch: {}:{}".format(
+			len(x_list), len(theta_list)))
+	for i in range(len(x_list)):
 		q = create_bb84_single_state(cqcc, x_list[i], theta_list[i])
 		qbit.append(q)
 	return qbit_list
 
 def discard_bits(bit_list, theta_list_1, theta_list_2):
-	if not ((size(bit_list) == size(theta_list_1)) and \
-		    (size(bit_list) == size(theta_list_2))):
-		raise RuntimeError("create_bb84_states size mismatch: {}:{}:{}".format(
-			size(bit_list), size(theta_list_1), size(theta_list_2)))
+	if not ((len(bit_list) == len(theta_list_1)) and \
+		    (len(bit_list) == len(theta_list_2))):
+		raise RuntimeError("create_bb84_states len mismatch: {}:{}:{}".format(
+			len(bit_list), len(theta_list_1), len(theta_list_2)))
 	result_list = []
-	for i in range(size(bits_list)):
+	for i in range(len(bit_list)):
 		if theta_list_1[i] == theta_list_2[i]:
-			result_list.append(bits_list[i])
+			result_list.append(bit_list[i])
 	return result_list
 
 def generate_random_indexes(list_size, sublist_size):
@@ -131,7 +131,7 @@ def generate_sublist_removing_idx(full_list, idx_sublist):
 	l1 = list(full_list)
 	for i in idx_sublist:
 		l[i] = tag
-	l2 = [e in l1 if not e == tag]
+	l2 = [e for e in l1 if not e == tag]
 	return l2
 
 def print_result(player, rc):

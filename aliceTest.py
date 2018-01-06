@@ -32,7 +32,7 @@ def run_protocol(Alice):
 
 	#Discard bits measured in different basis
 	x1 = udr.discard_bits(x, theta_list_alice, theta_list_bob):
-	n1 = size(x1)
+	n1 = len(x1)
 	if not n1 > 1:
 		print("Alice: only %d bits left after basis check" % n1)
 		return udr.ProtocolResult.BasisCheckFailure 
@@ -55,7 +55,7 @@ def run_protocol(Alice):
 
 	# Remove test bits from bit string
 	x2 = udr.generate_sublist_removing_idx(x1, idx_test_list):
-	n1 = size(x2)
+	n2 = len(x2)
 	if not x2 > 0:
 		print("Alice: only %d bits left after error check" % n1)
 		return udr.ProtocolResult.NoBitsAfterErrorCheck
