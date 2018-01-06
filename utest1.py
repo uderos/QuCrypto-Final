@@ -49,6 +49,11 @@ def test04():
 
 def test05():
 	print("test05() - BEGIN")
+	full_list = list(range(10))
+	idx_sublist = [9, 2, 7, 4]
+	exp_l = [0, 1, 3, 5, 6, 8]
+	calc_l = generate_sublist_removing_idx(full_list, idx_sublist)
+	test_assert(calc_l == exp_l)
 
 def main():
 	Eve=CQCConnection("Eve")
