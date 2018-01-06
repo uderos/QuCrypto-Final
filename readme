@@ -1,0 +1,9 @@
+#!/bin/sh
+
+echo "To start SimulaQron:"
+echo "Change directory to ~/classes/QuCryptox-2017/src/SimulaQron"
+echo "export NETSIM=~/classes/QuCryptox-2017/src"
+echo "export PYTHONPATH=classes/QuCryptox-2017/src:$PYTHONPATH"
+echo "sh run/startAll.sh"
+
+
