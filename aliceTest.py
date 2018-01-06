@@ -1,35 +1,57 @@
-#
-# Copyright (c) 2017, Stephanie Wehner and Axel Dahlberg
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-# 1. Redistributions of source code must retain the above copyright
-#    notice, this list of conditions and the following disclaimer.
-# 2. Redistributions in binary form must reproduce the above copyright
-#    notice, this list of conditions and the following disclaimer in the
-#    documentation and/or other materials provided with the distribution.
-# 3. All advertising materials mentioning features or use of this software
-#    must display the following acknowledgement:
-#    This product includes software developed by Stephanie Wehner, QuTech.
-# 4. Neither the name of the QuTech organization nor the
-#    names of its contributors may be used to endorse or promote products
-#    derived from this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER ''AS IS'' AND ANY
-# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY
-# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-from SimulaQron.cqc.pythonLib.cqc import *
-
 import random
+from SimulaQron.cqc.pythonLib.cqc import *
+import udr_utils as udr
+
+def run_protocol(Alice):
+	# Retrieve test global parameters
+	[ n ] = udr.get_exercise_params()
+
+	#Generate a set of random classical bits (x)
+	x = udr.generate_random_bits(n)
+
+	#Generate a set of random classical bits (theta)
+	theta_alice = udr.generate_random_bits(n)
+
+	#Generate the set of bb84 qbits
+	qbits_list = udr.create_bb84_states(Alice, x, theta_alice):
+
+	#Send the qbits to Bob (via Eve)
+	udr.send_qbit_list(Alice, "Eve", qbits_list)
+
+	# Wait for acknowledge from Bob
+	ack = Alice.recvClassical()[0]
+	if not ack == udr.CommId.ReckAck
+		raise RuntimeError("Alice: invalid ack msg from Bob: {}:{}".
+			format(ack, udr.CommId.ReckAck);
+	
+	# Send Bob our basis string
+	Alice.sendClassical("Bob", theta_alice)
+
+	# Receive Bob's basis string
+	theta_bob = Alice.recvClassical()
+
+	#Discard bits measured in different basis
+	x1 = udr.discard_bits(x, theta_list_alice, theta_list_bob):
+	n1 = size(x1)
+	if not n1 > 1:
+		print("Alice: only %d bits left after basis check" % n1)
+		return udr.ProtocolResult.BasisCheckFailure 
+
+	
+	# Generate test string indexes and test bits
+	nt = n1 // 2
+	idx_test_list = udr.generate_random_indexes(n1, nt)
+	xt_alice = generate_sublist_from_idx(x1, idx_test_list)
+
+	# Send test string indexes and values to Bob
+	Alice.sendClassical("Bob", idx_test_list)
+	Alice.sendClassical("Bob", xt_alice)
+
+	# Receive test values from Bob and peform error check
+	xt_bob = Alice.recvClassical()
+	if not xt_alice == xt_bob:
+		print("Alice: Error check failure: {}:{}".format(xt_alice, xt_bob))
+		return udr.ProtocolResult.ErrorCheckFailure 
 
 
 
@@ -40,31 +62,38 @@ import random
 def main():
 
 	# Initialize the connection
-	Alice=CQCConnection("Alice")
+	Alice = CQCConnection("Alice")
 
-	#Generate a key
-	k=random.randint(0,1)
+	# Run the protocol
+	rc = run_protocol(Alice)
 
-	# Create a qubit
-	q=qubit(Alice)
+	# Display results
+	udr.print_result("Alice", rc)
 
-	# Encode the key in the qubit
-	if k==1:
-		q.X()
-
-	#Send qubit to Bob (via Eve)
-	print("Alice is sending qbit to Eve: k={} q={}".format(k,q))
-	Alice.sendQubit(q,"Eve")
-
-	# Encode and send a classical message m to Bob
-	m=0
-	enc=(m+k)%2
-	Alice.sendClassical("Bob",enc)
-
-	print("Alice send the message m={} to Bob".format(m))
+#
+#
+#
+#	# Create a qubit
+#	q=qubit(Alice)
+#
+#	# Encode the key in the qubit
+#	if k==1:
+#		q.X()
+#
+#	#Send qubit to Bob (via Eve)
+#	print("Alice is sending qbit to Eve: k={} q={}".format(k,q))
+#	Alice.sendQubit(q,"Eve")
+#
+#	# Encode and send a classical message m to Bob
+#	m=0
+#	enc=(m+k)%2
+#	Alice.sendClassical("Bob",enc)
+#
+#	print("Alice send the message m={} to Bob".format(m))
 
 	# Stop the connections
 	Alice.close()
+
 
 
 ##################################################################################################

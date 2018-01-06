@@ -5,6 +5,15 @@
 
 from SimulaQron.cqc.pythonLib.cqc import *
 import random
+from enum import Enum
+
+class CommId(Enum):
+	RecvAck = 1
+
+class ProtocolResult(Enum):
+	Success = 1,
+	BasisCheckFailure = 2,
+	ErrorCheckFailure = 3
 
 
 def get_exercise_params():
@@ -18,6 +27,33 @@ def generate_random_bits(n):
 		x = random.randint(0,1)
 		bit_list.append(x)
 	return bit_list
+		
+def send_qbit_list(cqcc_from, name_to, qbit_list):
+	for qb in qbit_list:
+		cqccfrom.sendQubit(qb, name_to)
+
+def recv_qbit_list(cqcc_dest, n):
+	qbit_list = []
+	for i in range(n):
+		qb = cqcc_dest.recvQubit()
+
+def measure_single_bb84_qbit(qbit, theta):
+	m = 0
+	if theta == 0:
+		return qbit.measure()
+	if theta == 1:
+		return qbit.H().measure()
+	raise RuntimeError("Invalid theta value: {}."format(theta))
+	
+def measure_bb84_qbit_list(qbit_list, theta_list):
+	if not size(qbit_list) == size(theta_list):
+	raise RuntimeError("Size mismatch: {}:{}".format(
+		size(qbit_list), size(theta_list)))
+	meas_list = []
+	for i in range(size(qbit_list)):
+		m = measure_single_bb84_qbit(qbit_list[i], theta_list[i])
+		meas_list.append(m)
+	return meas_list
 		
 
 def create_bb84_single_state(cqcc, x, theta):
@@ -66,6 +102,31 @@ def create_bb84_states(cqcc, x_list, theta_list):
 		qbit.append(q)
 	return qbit_list
 
+def discard_bits(bit_list, theta_list_1, theta_list_2):
+	if not ((size(bit_list) == size(theta_list_1)) and \
+		    (size(bit_list) == size(theta_list_2))):
+		raise RuntimeError("create_bb84_states size mismatch: {}:{}:{}".format(
+			size(bit_list), size(theta_list_1), size(theta_list_2)))
+	result_list = []
+	for i in range(size(bits_list)):
+		if theta_list_1[i] == theta_list_2[i]:
+			result_list.append(bits_list[i])
+	return result_list
+
+def generate_random_indexes(list_size, sublist_size):
+	l = list(range(list_size))
+	random.shuffle(l)
+	l = l[0:sublist_size]
+	return l
+
+def generate_sublist_from_idx(full_list, idx_sublist):
+	l = []
+	for i in idx_sublist:
+		l.append(full_list[i])
+	return l
+
+def print_result(player, rc):
+	print("{} protocol result: {}".format(who, rc))
 
 #############################################################################
 # udr_utils module - END

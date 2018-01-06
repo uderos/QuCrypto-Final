@@ -1,34 +1,49 @@
-#
-# Copyright (c) 2017, Stephanie Wehner and Axel Dahlberg
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-# 1. Redistributions of source code must retain the above copyright
-#    notice, this list of conditions and the following disclaimer.
-# 2. Redistributions in binary form must reproduce the above copyright
-#    notice, this list of conditions and the following disclaimer in the
-#    documentation and/or other materials provided with the distribution.
-# 3. All advertising materials mentioning features or use of this software
-#    must display the following acknowledgement:
-#    This product includes software developed by Stephanie Wehner, QuTech.
-# 4. Neither the name of the QuTech organization nor the
-#    names of its contributors may be used to endorse or promote products
-#    derived from this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER ''AS IS'' AND ANY
-# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY
-# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 from SimulaQron.cqc.pythonLib.cqc import *
+import udr_utils as udr
 
+
+def run_protocol(Bob):
+	# Retrieve test global parameters
+	[ n ] = udr.get_exercise_params() 
+
+	# Receive bb84 qbits from Alice
+	qbit_list = recv_qbit_list(Bob, n)
+
+	#Generate a set of random classical bits (theta)
+	theta_bob = udr.generate_random_bits(n)
+
+	# Measure Alice's bb84 qbits
+	x = measure_bb84_qbit_list(qbit_list, theta_bob):
+
+	# Send Alice an acknowledge message
+	Bob.sendClassical("Alice", udr.CommId.ReckAck)
+
+	# Receive Alices's basis string
+	theta_alice = Bob.recvClassical()
+
+	# Send Alice out basis string
+	Bob.sendClassical("Alice", theta_bob)
+
+	#Discard bits measured in different basis
+	x1 = udr.discard_bits(x, theta_list_alice, theta_list_bob):
+	n1 = size(x1)
+	if not n1 > 1:
+		print("Bob: only %d bits left after basis check" % n1)
+		return udr.ProtocolResult.BasisCheckFailure 
+
+	# Receive test string indexes and values from Alice
+	idx_test_list = Bob.recvClassical()
+	xt_alice = Bob.recvClassical()
+
+	# Generate the test list and send it to Alice
+	nt = size(idx_test_list)
+	xt_bob = generate_sublist_from_idx(x1, idx_test_list)
+	Bob.sendClassical("Alice", xt_bob)
+
+	# Peform error check
+	if not xt_alice == xt_bob:
+		print("Bob: Error check failure: {}:{}".format(xt_bob, xt_alice))
+		return udr.ProtocolResult.ErrorCheckFailure 
 
 
 #####################################################################################################
@@ -41,22 +56,28 @@ def main():
 	Bob=CQCConnection("Bob")
 	Bob.startClassicalServer()
 
-	# Receive qubit from Alice (via Eve)
-	q=Bob.recvQubit()
-	print("Bob retrived a qbit from Alice. q={} type={}".format(q, type(q)))
+	# Run the protocol
+	rc = run_protocol(Bob)
 
-	# Retreive key
-	k=q.measure()
-	
-	print("Bob qbit measured value is {}".format(k))
+	# Display results
+	udr.print_result("Bob", rc)
 
-	# Receive classical encoded message from Alice
-	enc=Bob.recvClassical()[0]
-
-	# Calculate message
-	m=(enc+k)%2
-
-	print("Bob retrived the message m={} from Alice.".format(m))
+#	# Receive qubit from Alice (via Eve)
+#	q=Bob.recvQubit()
+#	print("Bob retrived a qbit from Alice. q={} type={}".format(q, type(q)))
+#
+#	# Retreive key
+#	k=q.measure()
+#	
+#	print("Bob qbit measured value is {}".format(k))
+#
+#	# Receive classical encoded message from Alice
+#	enc=Bob.recvClassical()[0]
+#
+#	# Calculate message
+#	m=(enc+k)%2
+#
+#	print("Bob retrived the message m={} from Alice.".format(m))
 
 	# Stop the connection
 	Bob.close()
