@@ -127,15 +127,14 @@ def generate_sublist_from_idx(full_list, idx_sublist):
 	return l
 
 def generate_sublist_removing_idx(full_list, idx_sublist):
-	tag = "TAG"
-	l1 = list(full_list)
-	for i in idx_sublist:
-		l[i] = tag
-	l2 = [e for e in l1 if not e == tag]
-	return l2
+	l = []
+	for i in range(len(full_list)):
+		if idx_sublist.count(i) == 0:
+			l.append(full_list[i])
+	return l
 
 def print_result(player, rc):
-	print("{} protocol result: {}".format(who, rc))
+	print("{} protocol result: {}".format(player, rc))
 
 #############################################################################
 # udr_utils module - END
