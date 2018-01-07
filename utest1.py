@@ -59,6 +59,15 @@ def test06():
 	print("test06() - BEGIN")
 	udr.print_result("UDR", udr.ProtocolResult.BasisCheckFailure)
 
+def test07():
+	print("test07() - BEGIN")
+	n1 = udr.get_player_name(udr.Players.Alice)
+	n2 = udr.get_player_name(udr.Players.Bob)
+	n3 = udr.get_player_name(udr.Players.Eve)
+	test_assert(n1 =="Alice")
+	test_assert(n2 =="Bob")
+	test_assert(n3 =="Eve")
+
 def main():
 	Eve=CQCConnection("Eve")
 
@@ -68,6 +77,7 @@ def main():
 	test04()
 	test05()
 	test06()
+	test07()
 
 	Eve.close()
 

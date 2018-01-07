@@ -5,7 +5,7 @@
 
 from SimulaQron.cqc.pythonLib.cqc import *
 import random
-from enum import Enum
+from enum import Enum, IntEnum
 
 class CommId(Enum):
 	RecvAck = 1
@@ -15,6 +15,17 @@ class ProtocolResult(Enum):
 	BasisCheckFailure = 2,
 	ErrorCheckFailure = 3,
 	NoBitsAfterErrorCheck = 4
+
+class Players(IntEnum):
+	Alice = 0,
+	Bob = 1,
+	Eve = 2
+
+def get_player_name(player):
+	player_names = ["Alice", "Bob", "Eve"]
+	if player < len(player_names):
+		return player_names[player]
+	raise RuntimeError("Invalid player: {}".format(player))
 
 
 def get_exercise_params():
@@ -31,7 +42,7 @@ def generate_random_bits(n):
 		
 def send_qbit_list(cqcc_from, name_to, qbit_list):
 	for qb in qbit_list:
-		cqccfrom.sendQubit(qb, name_to)
+		cqcc_from.sendQubit(qb, name_to)
 
 def recv_qbit_list(cqcc_dest, n):
 	qbit_list = []
@@ -73,7 +84,7 @@ def create_bb84_single_state(cqcc, x, theta):
 	"""
 
 	# Create a new qbit (default state is |0>)
-	q=qubit(Alice)
+	q=qubit(cqcc)
 
 	if x == 1 and theta == 0:
 		q.X() # change q from |0> to |1>
@@ -100,7 +111,7 @@ def create_bb84_states(cqcc, x_list, theta_list):
 			len(x_list), len(theta_list)))
 	for i in range(len(x_list)):
 		q = create_bb84_single_state(cqcc, x_list[i], theta_list[i])
-		qbit.append(q)
+		qbit_list.append(q)
 	return qbit_list
 
 def discard_bits(bit_list, theta_list_1, theta_list_2):

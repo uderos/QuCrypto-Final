@@ -30,6 +30,19 @@
 from SimulaQron.cqc.pythonLib.cqc import *
 
 
+def transfer_qbits(Eve, n, destination):
+	print("Eve: forwarding {} qbits to {}".format(n, destination))
+	for i in range(n):
+		q = Eve.recvQubit();
+		Eve.sendQubit(q, destination)
+
+def read_cmd(Eve):
+	n = Alice.recvClassical()[0]
+	player = Alice.recvClassical()[0]
+	player_name = udr.get_player_name(player)
+	return [n, player_name]
+	
+
 
 #####################################################################################################
 #
