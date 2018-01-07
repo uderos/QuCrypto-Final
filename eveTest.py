@@ -25,7 +25,7 @@ def run_protocol(Eve):
 	# Receive Alice's bb84 qbits and forward them to Bob
 	alice_qbits = udr.recv_qbit_list(Eve, num_bb84_qbits)
 
-	execute_attack(attack, qbit_list)
+	execute_attack(attack, alice_qbits)
 
 	udr.dbg_print("Eve: received Alice's qbits - forwarding to Bob")
 
@@ -43,7 +43,7 @@ def run_protocol(Eve):
 #
 def main():
 
-	try:
+#	try:
 
 		# Initialize the connection
 		Eve=CQCConnection("Eve")
@@ -53,8 +53,8 @@ def main():
 		# Stop the connection
 		Eve.close()
 
-	except Exception as e:
-		print("\n ALICE: EXCEPTION: {}".format(e))
+#	except Exception as e:
+#		print("\n EVE: EXCEPTION: {}".format(e))
 
 ##################################################################################################
 main()

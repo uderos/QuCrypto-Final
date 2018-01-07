@@ -26,8 +26,8 @@ class Players(IntEnum):
 	Eve = 2
 
 class AttackType(IntEnum):
-	NoAttack = 1,
-	MeasureHalfQbits = 2
+	NoAttack = 0,
+	MeasureHalfQbits = 1
 
 class ArgcValues(IntEnum):
 	ARGC_NUM_QBITS = 1,

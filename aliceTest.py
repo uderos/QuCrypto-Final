@@ -18,7 +18,7 @@ def run_protocol(Alice):
 	qbits_list = udr.create_bb84_states(Alice, x, theta_alice)
 
 	#Send the qbits to Bob (via Eve)
-	udr.dbg_print("Alice: sending {} qbits to Bob via Eve".format(n))
+	udr.dbg_print("Alice: sending {} qbits to Bob via Eve".format(num_bb84_qbits))
 	udr.send_qbit_list(Alice, "Eve", qbits_list)
 
 	# Wait for acknowledge from Bob
