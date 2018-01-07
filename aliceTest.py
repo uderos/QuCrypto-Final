@@ -9,6 +9,7 @@ def run_protocol(Alice):
 
 	#Generate a set of random classical bits (x)
 	x = udr.generate_random_bits(n)
+	udr.dbg_print("Alice: x={}".format(x))
 
 	#Generate a set of random classical bits (theta)
 	theta_alice = udr.generate_random_bits(n)
@@ -33,13 +34,16 @@ def run_protocol(Alice):
 
 	# Receive Bob's basis string
 	udr.dbg_print("Alice: waiting for Bob basis string")
-	theta_bob = Alice.recvClassical()
+	theta_bob = udr.recv_classic_list(Alice)
 	udr.dbg_print("Alice: got Bob basis string")
+	udr.dbg_print("Alice: alice_basis={}".format(theta_alice))
+	udr.dbg_print("Alice:   bob_basis={}".format(theta_bob))
 
 	#return udr.ProtocolResult.DebugAbort # UBEDEBUG
 
 	#Discard bits measured in different basis
 	x1 = udr.discard_bits(x, theta_alice, theta_bob)
+	udr.dbg_print("Alice: x1={}".format(x1))
 	n1 = len(x1)
 	if not n1 > 1:
 		print("Alice: only %d bits left after basis check" % n1)
@@ -60,21 +64,24 @@ def run_protocol(Alice):
 
 	# Receive test values from Bob and peform error check
 	udr.dbg_print("Alice: waiting for Bob's error checking bit list")
-	xt_bob = Alice.recvClassical()
+	xt_bob = udr.recv_classic_list(Alice)
+	udr.dbg_print("Alice: xt_alice={}".format(xt_alice))
+	udr.dbg_print("Alice:   xt_bob={}".format(xt_bob))
 	if not xt_alice == xt_bob:
 		print("Alice: Error check failure: {}:{}".format(xt_alice, xt_bob))
 		return udr.ProtocolResult.ErrorCheckFailure 
 
 	# Remove test bits from bit string
 	x2 = udr.generate_sublist_removing_idx(x1, idx_test_list)
+	udr.dbg_print("Alice: x2={}".format(x2))
 	n2 = len(x2)
-	if not x2 > 0:
-		print("Alice: only %d bits left after error check" % n1)
+	if not n2 > 0:
+		print("Alice: only %d bits left after error check" % n2)
 		return udr.ProtocolResult.NoBitsAfterErrorCheck
 
 	# We are done !
-	dbg_print("Alice: x2={}".format(x2))
-	return [udr.ProtocolResult.NoBitsAfterErrorCheck, x2]
+	udr.dbg_print("Alice: x2={}".format(x2))
+	return [udr.ProtocolResult.Success, x2]
 
 
 
@@ -93,7 +100,7 @@ def main():
 	udr.dbg_print("Alice: classical channel with Bob open")
 
 	# Run the protocol
-	rc = run_protocol(Alice)
+	[rc, key] = run_protocol(Alice)
 
 	# Display results
 	udr.print_result("Alice", rc)

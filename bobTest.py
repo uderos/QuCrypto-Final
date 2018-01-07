@@ -15,6 +15,7 @@ def run_protocol(Bob):
 
 	# Measure Alice's bb84 qbits
 	x = udr.measure_bb84_qbit_list(qbit_list, theta_bob)
+	udr.dbg_print("Bob: x={}".format(x))
 
 	# Send Alice an acknowledge message
 	udr.dbg_print("Bob: sending ack to ALice")
@@ -22,7 +23,7 @@ def run_protocol(Bob):
 
 	# Receive Alices's basis string
 	udr.dbg_print("Bob: waiting for Alice basis string")
-	theta_alice = Bob.recvClassical()
+	theta_alice = udr.recv_classic_list(Bob)
 
 	# Send Alice out basis string
 	udr.dbg_print("Bob: sending Alice my basis string")
@@ -32,6 +33,7 @@ def run_protocol(Bob):
 
 	#Discard bits measured in different basis
 	x1 = udr.discard_bits(x, theta_alice, theta_bob)
+	udr.dbg_print("Bob: x1={}".format(x1))
 	n1 = len(x1)
 	if not n1 > 1:
 		print("Bob: only %d bits left after basis check" % n1)
@@ -39,9 +41,9 @@ def run_protocol(Bob):
 
 	# Receive test string indexes and values from Alice
 	udr.dbg_print("Bob: waiting for Alice's test index list")
-	idx_test_list = Bob.recvClassical()
+	idx_test_list = udr.recv_classic_list(Bob)
 	udr.dbg_print("Bob: waiting for Alice's test bit string")
-	xt_alice = Bob.recvClassical()
+	xt_alice = udr.recv_classic_list(Bob)
 
 	# Generate the test list and send it to Alice
 	nt = len(idx_test_list)
@@ -56,14 +58,15 @@ def run_protocol(Bob):
 
 	# Remove test bits from bit string
 	x2 = udr.generate_sublist_removing_idx(x1, idx_test_list)
+	udr.dbg_print("Bob: x2={}".format(x2))
 	n2 = len(x2)
-	if not x2 > 0:
-		print("Alice: only %d bits left after error check" % n1)
+	if not n2 > 0:
+		print("Bob: only %d bits left after error check" % n2)
 		return udr.ProtocolResult.NoBitsAfterErrorCheck
 
 	# We are done !
 	udr.dbg_print("Bob x2={}".format(x2))
-	return [udr.ProtocolResult.NoBitsAfterErrorCheck, x2]
+	return [udr.ProtocolResult.Success, x2]
 
 
 #####################################################################################################
@@ -80,7 +83,7 @@ def main():
 	udr.dbg_print("Bob: classical server started")
 
 	# Run the protocol
-	rc = run_protocol(Bob)
+	[rc, key] = run_protocol(Bob)
 
 	# Display results
 	udr.print_result("Bob", rc)

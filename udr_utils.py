@@ -36,13 +36,24 @@ def get_exercise_params():
 	return [ n ]
 
 def dbg_print(msg):
+	f = open("logfile.txt", "a")
+	f.write("{}\n".format(msg))
+	f.close()
 	if DBG_PRINT_ENABLED:
 		print(msg)
 
-def generate_random_bits(n):
+def zz_generate_random_bits(n):
 	bit_list = []
 	for i in list(range(n)):
 		x = random.randint(0,1)
+		bit_list.append(x)
+	return bit_list
+		
+def generate_random_bits(n):
+	bit_list = []
+	x = 1
+	for i in list(range(n)):
+		x = 1 - x
 		bit_list.append(x)
 	return bit_list
 		
@@ -56,6 +67,21 @@ def recv_qbit_list(cqcc_dest, n):
 		qb = cqcc_dest.recvQubit()
 		qbit_list.append(qb)
 	return qbit_list
+
+def recv_classic_list(cqcc_dest):
+	raw_list = cqcc_dest.recvClassical()
+	l = []
+	for i in range(len(raw_list)):
+		l.append(raw_list[i])
+	return l
+
+#def raw_list_to_list(raw_list):
+#	l = []
+#	for i in range(len(raw_list)):
+#		l.append(raw_list[i])
+#	return l
+
+	
 
 def measure_single_bb84_qbit(qbit, theta):
 	if theta == 1:
@@ -150,7 +176,10 @@ def generate_sublist_removing_idx(full_list, idx_sublist):
 	return l
 
 def print_result(player, rc):
-	print("{} protocol result: {}".format(player, rc))
+	if rc == ProtocolResult.Success:
+		print("{} protocol result: SUCCESS".format(player))
+	else:
+		print("{} protocol result: {}".format(player, rc))
 
 #############################################################################
 # udr_utils module - END
