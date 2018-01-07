@@ -20,7 +20,7 @@ def measure_half_qbits(qbit_list):
 	
 def execute_attack(attack, qbit_list):
 	if attack == udr.AttackType.NoAttack:
-		udr.dbgprint("Eve: no attack")
+		udr.dbg_print("Eve: no attack")
 	elif attack == udr.AttackType.MeasureAllQbits:
 		measure_all_qbits(qbit_list)
 	elif attack == udr.AttackType.MeasureHalfQbits:
