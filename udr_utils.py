@@ -5,6 +5,7 @@
 
 from SimulaQron.cqc.pythonLib.cqc import *
 import random
+import sys
 from enum import Enum, IntEnum
 
 DBG_PRINT_ENABLED = True
@@ -24,16 +25,43 @@ class Players(IntEnum):
 	Bob = 1,
 	Eve = 2
 
+class AttackType(IntEnum):
+	NoAttack = 1,
+	MeasureHalfQbits = 2
+
+class ArgcValues(IntEnum):
+	ARGC_NUM_QBITS = 1,
+	ARGC_ATTACK_TYPE = 2
+
+def get_config_num_qbits():
+	if not len(sys.argv) > ArgcValues.ARGC_NUM_QBITS:
+		raise RuntimeError("CmdLine: missing number of qbits (argv[{}])".
+			format(ArgcValues.ARGC_NUM_QBITS))
+	n = int(sys.argv[ArgcValues.ARGC_NUM_QBITS])
+	if not n > 2:
+		raise RuntimeError("CmdLine: invalid number of qbits={} (argv[{}])".
+			format(n, ArgcValues.ARGC_NUM_QBITS))
+	return n
+
+def get_config_attack_type():
+	if len(sys.argv) <= ArgcValues.ARGC_ATTACK_TYPE:
+		raise RuntimeError("CmdLine: missing attack type (argv[{}])".
+			format(ArgcValues.ARGC_ATTACK_TYPE))
+	try:
+		idx = int(sys.argv[ArgcValues.ARGC_ATTACK_TYPE])
+		attack = AttackType(idx)
+		return attack
+	except ValueError:
+		raise RuntimeError("CmdLine: invalid attack type={} (argv[{}])".
+			format(idx, ArgcValues.ARGC_ATTACK_TYPE))
+
+
 def get_player_name(player):
 	player_names = ["Alice", "Bob", "Eve"]
 	if player < len(player_names):
 		return player_names[player]
 	raise RuntimeError("Invalid player: {}".format(player))
 
-
-def get_exercise_params():
-	n = 8 # number of qbits
-	return [ n ]
 
 def dbg_print(msg):
 	f = open("logfile.txt", "a")

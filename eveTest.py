@@ -3,20 +3,29 @@ from SimulaQron.cqc.pythonLib.cqc import *
 import udr_utils as udr
 
 
-#def transfer_qbits(Eve, n, destination):
-#	print("Eve: forwarding {} qbits to {}".format(n, destination))
-#	for i in range(n):
-#		q = Eve.recvQubit();
-#		Eve.sendQubit(q, destination)
-
+def measure_half_qbits(qbit_list):
+	udr.dbg_print("Eve: *attack*: measuring 1/2 of Alice's qbits")
+	measureInPlace = True
+	flag = False
+	for i in range(len(qbit_list)):
+		flag = not flag
+		if flag:
+			qbit_list[i].measure(measureInPlace)
+	
+def execute_attack(attack, qbit_list):
+	if attack == udr.AttackType.MeasureHalfQbits:
+		measure_half_qbits(qbit_list)
 
 def run_protocol(Eve):
 
 	# Retrieve test global parameters
-	[ n ] = udr.get_exercise_params()
+	num_bb84_qbits = udr.get_config_num_qbits()
+	attack = udr.get_config_attack_type()
 
 	# Receive Alice's bb84 qbits and forward them to Bob
-	alice_qbits = udr.recv_qbit_list(Eve, n)
+	alice_qbits = udr.recv_qbit_list(Eve, num_bb84_qbits)
+
+	execute_attack(attack, qbit_list)
 
 	udr.dbg_print("Eve: received Alice's qbits - forwarding to Bob")
 

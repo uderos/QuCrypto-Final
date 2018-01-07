@@ -5,14 +5,14 @@ import udr_utils as udr
 
 def run_protocol(Alice):
 	# Retrieve test global parameters
-	[ n ] = udr.get_exercise_params()
+	num_bb84_qbits = udr.get_config_num_qbits()
 
 	#Generate a set of random classical bits (x)
-	x = udr.generate_random_bits(n)
+	x = udr.generate_random_bits(num_bb84_qbits)
 	udr.dbg_print("Alice: x={}".format(x))
 
 	#Generate a set of random classical bits (theta)
-	theta_alice = udr.generate_random_bits(n)
+	theta_alice = udr.generate_random_bits(num_bb84_qbits)
 
 	#Generate the set of bb84 qbits
 	qbits_list = udr.create_bb84_states(Alice, x, theta_alice)
@@ -94,7 +94,7 @@ def run_protocol(Alice):
 #
 def main():
 
-	try:
+#	try:
 
 		# Initialize the connection
 		Alice = CQCConnection("Alice")
@@ -114,8 +114,8 @@ def main():
 		# Stop the connections
 		Alice.close()
 
-	except Exception as e:
-		print("\n ALICE: EXCEPTION: {}".format(e))
+#	except Exception as e:
+#		print("\n ALICE: EXCEPTION: {}".format(e))
 
 
 

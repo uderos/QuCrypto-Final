@@ -5,14 +5,14 @@ import udr_utils as udr
 
 def run_protocol(Bob):
 	# Retrieve test global parameters
-	[ n ] = udr.get_exercise_params() 
+	num_bb84_qbits = udr.get_config_num_qbits()
 
 	# Receive bb84 qbits from Alice
 	udr.dbg_print("Bob: waiting for bb84 qbits from Alice")
-	qbit_list = udr.recv_qbit_list(Bob, n)
+	qbit_list = udr.recv_qbit_list(Bob, num_bb84_qbits)
 
 	#Generate a set of random classical bits (theta)
-	theta_bob = udr.generate_random_bits(n)
+	theta_bob = udr.generate_random_bits(num_bb84_qbits)
 
 	# Measure Alice's bb84 qbits
 	x = udr.measure_bb84_qbit_list(qbit_list, theta_bob)

@@ -11,14 +11,13 @@ def test_assert(predicate):
 
 def test01():
 	print("test01() - BEGIN")
-	[ n ] = udr.get_exercise_params()
-	print("n={}".format(n))
 
-	for i in range(1,16):
-		qbl = udr.generate_random_bits(i)
-		mean = statistics.mean(qbl)
-		print("rnd_bits_{}: {} mean={}".format(i,qbl,mean))
-		test_assert(n == 8)
+	n = udr.get_config_num_qbits()
+	attack = udr.get_config_attack_type()
+	print("n={} attack={}".format(n, attack))
+	qbl = udr.generate_random_bits(n)
+	mean = statistics.mean(qbl)
+	print("rnd_bits={} mean={}".format(qbl,mean))
 
 def test02():
 	print("test02() - BEGIN")
@@ -58,7 +57,7 @@ def test05():
 def test06():
 	print("test06() - BEGIN")
 	udr.print_result("UDR", udr.ProtocolResult.BasisCheckFailure, 0)
-	udr.print_result("UDR", udr.ProtocolResult.BasisCheckFailure, 1)
+	udr.print_result("UDR", udr.ProtocolResult.Success, 1)
 
 def test07():
 	print("test07() - BEGIN")
