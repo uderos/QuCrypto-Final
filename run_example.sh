@@ -1,6 +1,7 @@
 
 ps aux | grep python | grep Test | awk {'print $2'} | xargs kill -9
 
-python aliceTest.py &
-python bobTest.py &
-python eveTest.py &
+OPTIONS=-m trace --trace trace
+python $OPTIONS aliceTest.py &
+python $OPTIONS bobTest.py &
+python $OPTIONS eveTest.py &

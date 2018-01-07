@@ -74,8 +74,6 @@ def test08():
 	print("AckCmd={}".format(udr.classicCmd_RecvAck))
 
 def main():
-	Eve=CQCConnection("Eve")
-
 	test01()
 	test02()
 	test03()
@@ -85,7 +83,6 @@ def main():
 	test07()
 	test08()
 
-	Eve.close()
 
 main()
 

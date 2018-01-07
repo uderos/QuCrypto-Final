@@ -35,10 +35,10 @@ def run_protocol(Alice):
 	theta_bob = Alice.recvClassical()
 	udr.dbg_print("Alice: got Bob basis string")
 
-	return udr.ProtocolResult.DebugAbort # UBEDEBUG
+	#return udr.ProtocolResult.DebugAbort # UBEDEBUG
 
 	#Discard bits measured in different basis
-	x1 = udr.discard_bits(x, theta_list_alice, theta_list_bob)
+	x1 = udr.discard_bits(x, theta_alice, theta_bob)
 	n1 = len(x1)
 	if not n1 > 1:
 		print("Alice: only %d bits left after basis check" % n1)
@@ -48,12 +48,12 @@ def run_protocol(Alice):
 	# Generate test string indexes and test bits
 	nt = n1 // 2
 	idx_test_list = udr.generate_random_indexes(n1, nt)
-	xt_alice = generate_sublist_from_idx(x1, idx_test_list)
+	xt_alice = udr.generate_sublist_from_idx(x1, idx_test_list)
 
 	# Send test string indexes and values to Bob
-	udr.dbg_print("Alice: sending Bob the error checking index list")
+	udr.dbg_print("Alice: Sending Bob the test index list")
 	Alice.sendClassical("Bob", idx_test_list)
-	udr.dbg_print("Alice: sending Bob the error checking bit list")
+	udr.dbg_print("Alice: Sending Bob test bit string")
 	Alice.sendClassical("Bob", xt_alice)
 
 	# Receive test values from Bob and peform error check
