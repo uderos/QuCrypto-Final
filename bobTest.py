@@ -20,8 +20,6 @@ def run_protocol(Bob):
 	udr.dbg_print("Bob: sending ack to ALice")
 	Bob.sendClassical("Alice", udr.classicCmd_RecvAck )
 
-	return udr.ProtocolResult.DebugAbort # UBEDEBUG
-
 	# Receive Alices's basis string
 	udr.dbg_print("Bob: waiting for Alice basis string")
 	theta_alice = Bob.recvClassical()
@@ -29,6 +27,8 @@ def run_protocol(Bob):
 	# Send Alice out basis string
 	udr.dbg_print("Bob: sending Alice my basis string")
 	Bob.sendClassical("Alice", theta_bob)
+
+	return udr.ProtocolResult.DebugAbort # UBEDEBUG
 
 	#Discard bits measured in different basis
 	x1 = udr.discard_bits(x, theta_list_alice, theta_list_bob)
@@ -75,9 +75,9 @@ def main():
 	# Initialize the connection
 	Bob=CQCConnection("Bob")
 
-	#udr.dbg_print("Bob: starting classical server")
-	#Bob.startClassicalServer()
-	#udr.dbg_print("Bob: classical server started")
+	udr.dbg_print("Bob: starting classical server")
+	Bob.startClassicalServer()
+	udr.dbg_print("Bob: classical server started")
 
 	# Run the protocol
 	rc = run_protocol(Bob)

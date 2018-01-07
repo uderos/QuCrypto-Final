@@ -26,8 +26,6 @@ def run_protocol(Alice):
 		raise RuntimeError("Alice: invalid ack msg from Bob: {}:{}".
 			format(ack, udr.classicCmd_RecvAck ));
 	
-	return udr.ProtocolResult.DebugAbort # UBEDEBUG
-
 	# Send Bob our basis string
 	udr.dbg_print("Alice: sending Bob the basis string")
 	Alice.sendClassical("Bob", theta_alice)
@@ -36,6 +34,8 @@ def run_protocol(Alice):
 	udr.dbg_print("Alice: waiting for Bob basis string")
 	theta_bob = Alice.recvClassical()
 	udr.dbg_print("Alice: got Bob basis string")
+
+	return udr.ProtocolResult.DebugAbort # UBEDEBUG
 
 	#Discard bits measured in different basis
 	x1 = udr.discard_bits(x, theta_list_alice, theta_list_bob)
@@ -85,9 +85,9 @@ def main():
 	# Initialize the connection
 	Alice = CQCConnection("Alice")
 
-	#udr.dbg_print("Alice: opening classical channel with Bob")
-	#Alice.openClassicalChannel("Bob");
-	#udr.dbg_print("Alice: classical channel with Bob open")
+	udr.dbg_print("Alice: opening classical channel with Bob")
+	Alice.openClassicalChannel("Bob");
+	udr.dbg_print("Alice: classical channel with Bob open")
 
 	# Run the protocol
 	rc = run_protocol(Alice)
