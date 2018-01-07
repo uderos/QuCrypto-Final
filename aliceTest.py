@@ -1,4 +1,5 @@
 import random
+import time
 from SimulaQron.cqc.pythonLib.cqc import *
 import udr_utils as udr
 
@@ -53,6 +54,7 @@ def run_protocol(Alice):
 	# Send test string indexes and values to Bob
 	udr.dbg_print("Alice: Sending Bob the test index list")
 	Alice.sendClassical("Bob", idx_test_list)
+	time.sleep(2)
 	udr.dbg_print("Alice: Sending Bob test bit string")
 	Alice.sendClassical("Bob", xt_alice)
 
@@ -86,6 +88,7 @@ def main():
 	Alice = CQCConnection("Alice")
 
 	udr.dbg_print("Alice: opening classical channel with Bob")
+	time.sleep(2)
 	Alice.openClassicalChannel("Bob");
 	udr.dbg_print("Alice: classical channel with Bob open")
 
