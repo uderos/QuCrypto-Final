@@ -60,13 +60,13 @@ def test06():
 	udr.print_result("UDR", 1)
 
 def test07():
-	print("test07() - BEGIN")
-	n1 = udr.get_player_name(udr.Players.Alice)
-	n2 = udr.get_player_name(udr.Players.Bob)
-	n3 = udr.get_player_name(udr.Players.Eve)
-	test_assert(n1 =="Alice")
-	test_assert(n2 =="Bob")
-	test_assert(n3 =="Eve")
+#	print("test07() - BEGIN")
+#	n1 = udr.get_player_name(udr.Players.Alice)
+#	n2 = udr.get_player_name(udr.Players.Bob)
+#	n3 = udr.get_player_name(udr.Players.Eve)
+#	test_assert(n1 =="Alice")
+#	test_assert(n2 =="Bob")
+#	test_assert(n3 =="Eve")
 
 
 def test08():

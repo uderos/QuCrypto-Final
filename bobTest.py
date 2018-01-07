@@ -92,7 +92,7 @@ def main():
 	
 		# Display results
 		time.sleep(1)
-		udr.print_result("Bob", rc, key)
+		udr.print_result("Bob", key)
 	
 		# Stop the connection
 		Bob.close()

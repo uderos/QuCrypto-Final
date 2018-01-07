@@ -11,19 +11,8 @@ from enum import Enum, IntEnum
 DBG_PRINT_ENABLED = True
 
 
+# Message identifiers for classical channel communications
 classicCmd_RecvAck = 1
-
-class ProtocolResult(Enum):
-	Success = 1,
-	BasisCheckFailure = 2,
-	ErrorCheckFailure = 3,
-	NoBitsAfterErrorCheck = 4,
-	DebugAbort = 5
-
-class Players(IntEnum):
-	Alice = 0,
-	Bob = 1,
-	Eve = 2
 
 class AttackType(IntEnum):
 	NoAttack = 0,
@@ -75,13 +64,6 @@ def get_config_disable_random():
 	if len(sys.argv) > ArgcValues.ARGC_DISABLE_RANDOM:
 		disable_random = int(sys.argv[ArgcValues.ARGC_DISABLE_RANDOM]) > 0
 	return disable_random
-
-def get_player_name(player):
-	player_names = ["Alice", "Bob", "Eve"]
-	if player < len(player_names):
-		return player_names[player]
-	raise RuntimeError("Invalid player: {}".format(player))
-
 
 def dbg_print(msg):
 	f = open("logfile.txt", "a")

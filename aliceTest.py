@@ -107,7 +107,7 @@ def main():
 	
 		# Display results
 		time.sleep(1)
-		udr.print_result("Alice", rc, key)
+		udr.print_result("Alice", key)
 	
 		# Stop the connections
 		Alice.close()
