@@ -1,3 +1,4 @@
+import time
 from SimulaQron.cqc.pythonLib.cqc import *
 import udr_utils as udr
 
@@ -64,9 +65,13 @@ def run_protocol(Bob):
 		print("Bob: only %d bits left after error check" % n2)
 		return udr.ProtocolResult.NoBitsAfterErrorCheck
 
+	# Calculate the key as xor of the remaining bits
+	key_bit = udr.calculate_bit_list_xor(x2)
+	udr.dbg_print("Bob: key_bit={}".format(key_bit))
+
 	# We are done !
-	udr.dbg_print("Bob x2={}".format(x2))
-	return [udr.ProtocolResult.Success, x2]
+	return [udr.ProtocolResult.Success, key_bit]
+
 
 
 #####################################################################################################
@@ -86,7 +91,8 @@ def main():
 	[rc, key] = run_protocol(Bob)
 
 	# Display results
-	udr.print_result("Bob", rc)
+	time.sleep(1)
+	udr.print_result("Bob", rc, key)
 
 	# Stop the connection
 	Bob.close()

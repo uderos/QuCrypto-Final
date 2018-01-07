@@ -42,14 +42,14 @@ def dbg_print(msg):
 	if DBG_PRINT_ENABLED:
 		print(msg)
 
-def zz_generate_random_bits(n):
+def generate_random_bits(n):
 	bit_list = []
 	for i in list(range(n)):
 		x = random.randint(0,1)
 		bit_list.append(x)
 	return bit_list
 		
-def generate_random_bits(n):
+def zz_generate_random_bits(n):
 	bit_list = []
 	x = 1
 	for i in list(range(n)):
@@ -75,13 +75,6 @@ def recv_classic_list(cqcc_dest):
 		l.append(raw_list[i])
 	return l
 
-#def raw_list_to_list(raw_list):
-#	l = []
-#	for i in range(len(raw_list)):
-#		l.append(raw_list[i])
-#	return l
-
-	
 
 def measure_single_bb84_qbit(qbit, theta):
 	if theta == 1:
@@ -175,11 +168,21 @@ def generate_sublist_removing_idx(full_list, idx_sublist):
 			l.append(full_list[i])
 	return l
 
-def print_result(player, rc):
+def calculate_bit_list_xor(bit_list):
+	xor = bool(0)
+	for b in bit_list:
+		if not ((b == 0) or (b == 1)):
+			raise RuntimeError("Invalid bit value: {}".format(b))
+		xor = bool(xor) != bool(b)
+	if xor:
+		return 1
+	return 0
+
+def print_result(player, rc, key):
 	if rc == ProtocolResult.Success:
-		print("{} protocol result: SUCCESS".format(player))
+		print("{} protocol result: SUCCESS key={}".format(player, key))
 	else:
-		print("{} protocol result: {}".format(player, rc))
+		print("{} protocol result: #failure# rc={}".format(player, rc))
 
 #############################################################################
 # udr_utils module - END

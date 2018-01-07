@@ -57,7 +57,8 @@ def test05():
 
 def test06():
 	print("test06() - BEGIN")
-	udr.print_result("UDR", udr.ProtocolResult.BasisCheckFailure)
+	udr.print_result("UDR", udr.ProtocolResult.BasisCheckFailure, 0)
+	udr.print_result("UDR", udr.ProtocolResult.BasisCheckFailure, 1)
 
 def test07():
 	print("test07() - BEGIN")
@@ -73,6 +74,16 @@ def test08():
 	print("test08() - BEGIN")
 	print("AckCmd={}".format(udr.classicCmd_RecvAck))
 
+def test09():
+	print("test09() - BEGIN")
+	bit_list = [1, 0, 1, 0, 1, 1]
+	xor = udr.calculate_bit_list_xor(bit_list)
+	test_assert(xor == 0)
+	bit_list = [1, 0, 1, 0, 1, 0]
+	xor = udr.calculate_bit_list_xor(bit_list)
+	test_assert(xor == 1)
+
+
 def main():
 	test01()
 	test02()
@@ -82,6 +93,7 @@ def main():
 	test06()
 	test07()
 	test08()
+	test09()
 
 
 main()

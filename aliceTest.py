@@ -79,9 +79,12 @@ def run_protocol(Alice):
 		print("Alice: only %d bits left after error check" % n2)
 		return udr.ProtocolResult.NoBitsAfterErrorCheck
 
+	# Calculate the key as xor of the remaining bits
+	key_bit = udr.calculate_bit_list_xor(x2)
+	udr.dbg_print("Alice: key_bit={}".format(key_bit))
+
 	# We are done !
-	udr.dbg_print("Alice: x2={}".format(x2))
-	return [udr.ProtocolResult.Success, x2]
+	return [udr.ProtocolResult.Success, key_bit]
 
 
 
@@ -103,7 +106,8 @@ def main():
 	[rc, key] = run_protocol(Alice)
 
 	# Display results
-	udr.print_result("Alice", rc)
+	time.sleep(1)
+	udr.print_result("Alice", rc, key)
 
 	# Stop the connections
 	Alice.close()
