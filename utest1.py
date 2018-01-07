@@ -68,6 +68,11 @@ def test07():
 	test_assert(n2 =="Bob")
 	test_assert(n3 =="Eve")
 
+
+def test08():
+	print("test08() - BEGIN")
+	print("AckCmd={}".format(udr.classicCmd_RecvAck))
+
 def main():
 	Eve=CQCConnection("Eve")
 
@@ -78,6 +83,7 @@ def main():
 	test05()
 	test06()
 	test07()
+	test08()
 
 	Eve.close()
 

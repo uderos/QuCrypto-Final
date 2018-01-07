@@ -7,14 +7,17 @@ from SimulaQron.cqc.pythonLib.cqc import *
 import random
 from enum import Enum, IntEnum
 
-class CommId(Enum):
-	RecvAck = 1
+DBG_PRINT_ENABLED = True
+
+
+classicCmd_RecvAck = 1
 
 class ProtocolResult(Enum):
 	Success = 1,
 	BasisCheckFailure = 2,
 	ErrorCheckFailure = 3,
-	NoBitsAfterErrorCheck = 4
+	NoBitsAfterErrorCheck = 4,
+	DebugAbort = 5
 
 class Players(IntEnum):
 	Alice = 0,
@@ -32,6 +35,9 @@ def get_exercise_params():
 	n = 8 # number of qbits
 	return [ n ]
 
+def dbg_print(msg):
+	if DBG_PRINT_ENABLED:
+		print(msg)
 
 def generate_random_bits(n):
 	bit_list = []
@@ -48,14 +54,13 @@ def recv_qbit_list(cqcc_dest, n):
 	qbit_list = []
 	for i in range(n):
 		qb = cqcc_dest.recvQubit()
+		qbit_list.append(qb)
+	return qbit_list
 
 def measure_single_bb84_qbit(qbit, theta):
-	m = 0
-	if theta == 0:
-		return qbit.measure()
 	if theta == 1:
-		return qbit.H().measure()
-	raise RuntimeError("Invalid theta value: {}".format(theta))
+		qbit.H()
+	return qbit.measure()
 	
 def measure_bb84_qbit_list(qbit_list, theta_list):
 	if not len(qbit_list) == len(theta_list):
