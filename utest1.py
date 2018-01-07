@@ -56,8 +56,8 @@ def test05():
 
 def test06():
 	print("test06() - BEGIN")
-	udr.print_result("UDR", udr.ProtocolResult.BasisCheckFailure, 0)
-	udr.print_result("UDR", udr.ProtocolResult.Success, 1)
+	udr.print_result("UDR", 0)
+	udr.print_result("UDR", 1)
 
 def test07():
 	print("test07() - BEGIN")

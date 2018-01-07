@@ -3,6 +3,12 @@ from SimulaQron.cqc.pythonLib.cqc import *
 import udr_utils as udr
 
 
+def measure_all_qbits(qbit_list):
+	udr.dbg_print("Eve: *attack*: measuring all of Alice's qbits")
+	measureInPlace = True
+	for qbit in qbit_list:
+		qbit.measure(measureInPlace)
+	
 def measure_half_qbits(qbit_list):
 	udr.dbg_print("Eve: *attack*: measuring 1/2 of Alice's qbits")
 	measureInPlace = True
@@ -13,8 +19,14 @@ def measure_half_qbits(qbit_list):
 			qbit_list[i].measure(measureInPlace)
 	
 def execute_attack(attack, qbit_list):
-	if attack == udr.AttackType.MeasureHalfQbits:
+	if attack == udr.AttackType.NoAttack:
+		udr.dbgprint("Eve: no attack")
+	elif attack == udr.AttackType.MeasureAllQbits:
+		measure_all_qbits(qbit_list)
+	elif attack == udr.AttackType.MeasureHalfQbits:
 		measure_half_qbits(qbit_list)
+	else:
+		raise RuntimeError("Eve: invalid attack code={}".format(attack))
 
 def run_protocol(Eve):
 

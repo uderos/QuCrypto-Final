@@ -4,6 +4,7 @@ from SimulaQron.cqc.pythonLib.cqc import *
 import udr_utils as udr
 
 def run_protocol(Alice):
+
 	# Retrieve test global parameters
 	num_bb84_qbits = udr.get_config_num_qbits()
 
@@ -39,16 +40,13 @@ def run_protocol(Alice):
 	udr.dbg_print("Alice: alice_basis={}".format(theta_alice))
 	udr.dbg_print("Alice:   bob_basis={}".format(theta_bob))
 
-	#return udr.ProtocolResult.DebugAbort # UBEDEBUG
-
 	#Discard bits measured in different basis
 	x1 = udr.discard_bits(x, theta_alice, theta_bob)
 	udr.dbg_print("Alice: x1={}".format(x1))
 	n1 = len(x1)
 	if not n1 > 1:
-		print("Alice: only %d bits left after basis check" % n1)
-		return udr.ProtocolResult.BasisCheckFailure 
-
+		raise udr.bb84Error_NoBitsBasisCkeck(
+			"Alice: only {} bits left after basis check".format(n1))
 	
 	# Generate test string indexes and test bits
 	nt = n1 // 2
@@ -68,23 +66,23 @@ def run_protocol(Alice):
 	udr.dbg_print("Alice: xt_alice={}".format(xt_alice))
 	udr.dbg_print("Alice:   xt_bob={}".format(xt_bob))
 	if not xt_alice == xt_bob:
-		print("Alice: Error check failure: {}:{}".format(xt_alice, xt_bob))
-		return udr.ProtocolResult.ErrorCheckFailure 
+		raise udr.bb84Error_TestCheck("Alice: Error check failure: {}:{}".
+			format(xt_alice, xt_bob))
 
 	# Remove test bits from bit string
 	x2 = udr.generate_sublist_removing_idx(x1, idx_test_list)
 	udr.dbg_print("Alice: x2={}".format(x2))
 	n2 = len(x2)
 	if not n2 > 0:
-		print("Alice: only %d bits left after error check" % n2)
-		return udr.ProtocolResult.NoBitsAfterErrorCheck
+		raise udr.bb84Error_TestCheck("Alice: only {} bits left after error check".
+			format(n2))
 
 	# Calculate the key as xor of the remaining bits
 	key_bit = udr.calculate_bit_list_xor(x2)
 	udr.dbg_print("Alice: key_bit={}".format(key_bit))
 
 	# We are done !
-	return [udr.ProtocolResult.Success, key_bit]
+	return key_bit
 
 
 
@@ -94,7 +92,7 @@ def run_protocol(Alice):
 #
 def main():
 
-#	try:
+	try:
 
 		# Initialize the connection
 		Alice = CQCConnection("Alice")
@@ -105,7 +103,7 @@ def main():
 		udr.dbg_print("Alice: classical channel with Bob open")
 	
 		# Run the protocol
-		[rc, key] = run_protocol(Alice)
+		key = run_protocol(Alice)
 	
 		# Display results
 		time.sleep(1)
@@ -114,8 +112,8 @@ def main():
 		# Stop the connections
 		Alice.close()
 
-#	except Exception as e:
-#		print("\n ALICE: EXCEPTION: {}".format(e))
+	except udr.bb84Error as e:
+		print("\n ALICE: ##Protocol Failure## {}".format(e))
 
 
 

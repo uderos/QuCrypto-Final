@@ -30,15 +30,13 @@ def run_protocol(Bob):
 	udr.dbg_print("Bob: sending Alice my basis string")
 	Bob.sendClassical("Alice", theta_bob)
 
-	#return udr.ProtocolResult.DebugAbort # UBEDEBUG
-
 	#Discard bits measured in different basis
 	x1 = udr.discard_bits(x, theta_alice, theta_bob)
 	udr.dbg_print("Bob: x1={}".format(x1))
 	n1 = len(x1)
 	if not n1 > 1:
-		print("Bob: only %d bits left after basis check" % n1)
-		return udr.ProtocolResult.BasisCheckFailure 
+		raise udr.bb84Error_NoBitsBasisCkeck(
+			"Bob: only {} bits left after basis check".format(n1))
 
 	# Receive test string indexes and values from Alice
 	udr.dbg_print("Bob: waiting for Alice's test index list")
@@ -54,23 +52,23 @@ def run_protocol(Bob):
 
 	# Peform error check
 	if not xt_alice == xt_bob:
-		print("Bob: Error check failure: {}:{}".format(xt_bob, xt_alice))
-		return udr.ProtocolResult.ErrorCheckFailure 
+		raise udr.bb84Error_TestCheck("Bob: Error check failure: {}:{}".
+			format(xt_alice, xt_bob))
 
 	# Remove test bits from bit string
 	x2 = udr.generate_sublist_removing_idx(x1, idx_test_list)
 	udr.dbg_print("Bob: x2={}".format(x2))
 	n2 = len(x2)
 	if not n2 > 0:
-		print("Bob: only %d bits left after error check" % n2)
-		return udr.ProtocolResult.NoBitsAfterErrorCheck
+		raise udr.bb84Error_TestCheck("Bob: only {} bits left after error check".
+			format(n2))
 
 	# Calculate the key as xor of the remaining bits
 	key_bit = udr.calculate_bit_list_xor(x2)
 	udr.dbg_print("Bob: key_bit={}".format(key_bit))
 
 	# We are done !
-	return [udr.ProtocolResult.Success, key_bit]
+	return key_bit
 
 
 
@@ -90,7 +88,7 @@ def main():
 		udr.dbg_print("Bob: classical server started")
 	
 		# Run the protocol
-		[rc, key] = run_protocol(Bob)
+		key = run_protocol(Bob)
 	
 		# Display results
 		time.sleep(1)
@@ -99,8 +97,8 @@ def main():
 		# Stop the connection
 		Bob.close()
 
-	except Exception as e:
-		print("\n BOB: EXCEPTION: {}".format(e))
+	except udr.bb84Error as e:
+		print("\n BOB: ##Protocol Failure## {}".format(e))
 
 
 ##################################################################################################

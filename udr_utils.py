@@ -27,11 +27,26 @@ class Players(IntEnum):
 
 class AttackType(IntEnum):
 	NoAttack = 0,
-	MeasureHalfQbits = 1
+	MeasureAllQbits = 1
+	MeasureHalfQbits = 2
 
 class ArgcValues(IntEnum):
 	ARGC_NUM_QBITS = 1,
-	ARGC_ATTACK_TYPE = 2
+	ARGC_ATTACK_TYPE = 2,
+	ARGC_DISABLE_RANDOM = 3
+
+class bb84Error(Exception):
+	pass
+
+class bb84Error_NoBitsBasisCkeck(bb84Error):
+	pass
+
+class bb84Error_TestCheck(bb84Error):
+	pass
+
+class bb84Error_NoBitsAfterTest(bb84Error):
+	pass
+
 
 def get_config_num_qbits():
 	if not len(sys.argv) > ArgcValues.ARGC_NUM_QBITS:
@@ -55,6 +70,11 @@ def get_config_attack_type():
 		raise RuntimeError("CmdLine: invalid attack type={} (argv[{}])".
 			format(idx, ArgcValues.ARGC_ATTACK_TYPE))
 
+def get_config_disable_random():
+	disable_random = False
+	if len(sys.argv) > ArgcValues.ARGC_DISABLE_RANDOM:
+		disable_random = int(sys.argv[ArgcValues.ARGC_DISABLE_RANDOM]) > 0
+	return disable_random
 
 def get_player_name(player):
 	player_names = ["Alice", "Bob", "Eve"]
@@ -70,14 +90,14 @@ def dbg_print(msg):
 	if DBG_PRINT_ENABLED:
 		print(msg)
 
-def generate_random_bits(n):
+def generate_random_bits_real(n):
 	bit_list = []
 	for i in list(range(n)):
 		x = random.randint(0,1)
 		bit_list.append(x)
 	return bit_list
 		
-def zz_generate_random_bits(n):
+def generate_random_bits_fake(n):
 	bit_list = []
 	x = 1
 	for i in list(range(n)):
@@ -85,6 +105,11 @@ def zz_generate_random_bits(n):
 		bit_list.append(x)
 	return bit_list
 		
+def generate_random_bits(n):
+	if get_config_disable_random():
+		return generate_random_bits_fake(n)
+	return generate_random_bits_real(n)
+
 def send_qbit_list(cqcc_from, name_to, qbit_list):
 	for qb in qbit_list:
 		cqcc_from.sendQubit(qb, name_to)
@@ -206,11 +231,8 @@ def calculate_bit_list_xor(bit_list):
 		return 1
 	return 0
 
-def print_result(player, rc, key):
-	if rc == ProtocolResult.Success:
-		print("{} protocol result: SUCCESS key={}".format(player, key))
-	else:
-		print("{} protocol result: #failure# rc={}".format(player, rc))
+def print_result(player, key):
+	print("{} protocol result: SUCCESS key={}".format(player, key))
 
 #############################################################################
 # udr_utils module - END
