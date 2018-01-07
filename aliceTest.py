@@ -13,16 +13,16 @@ def run_protocol(Alice):
 	theta_alice = udr.generate_random_bits(n)
 
 	#Generate the set of bb84 qbits
-	qbits_list = udr.create_bb84_states(Alice, x, theta_alice):
+	qbits_list = udr.create_bb84_states(Alice, x, theta_alice)
 
 	#Send the qbits to Bob (via Eve)
 	udr.send_qbit_list(Alice, "Eve", qbits_list)
 
 	# Wait for acknowledge from Bob
 	ack = Alice.recvClassical()[0]
-	if not ack == udr.CommId.ReckAck
+	if not ack == udr.CommId.ReckAck:
 		raise RuntimeError("Alice: invalid ack msg from Bob: {}:{}".
-			format(ack, udr.CommId.ReckAck);
+			format(ack, udr.CommId.ReckAck));
 	
 	# Send Bob our basis string
 	Alice.sendClassical("Bob", theta_alice)
@@ -31,7 +31,7 @@ def run_protocol(Alice):
 	theta_bob = Alice.recvClassical()
 
 	#Discard bits measured in different basis
-	x1 = udr.discard_bits(x, theta_list_alice, theta_list_bob):
+	x1 = udr.discard_bits(x, theta_list_alice, theta_list_bob)
 	n1 = len(x1)
 	if not n1 > 1:
 		print("Alice: only %d bits left after basis check" % n1)
@@ -54,7 +54,7 @@ def run_protocol(Alice):
 		return udr.ProtocolResult.ErrorCheckFailure 
 
 	# Remove test bits from bit string
-	x2 = udr.generate_sublist_removing_idx(x1, idx_test_list):
+	x2 = udr.generate_sublist_removing_idx(x1, idx_test_list)
 	n2 = len(x2)
 	if not x2 > 0:
 		print("Alice: only %d bits left after error check" % n1)

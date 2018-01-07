@@ -13,7 +13,7 @@ def run_protocol(Bob):
 	theta_bob = udr.generate_random_bits(n)
 
 	# Measure Alice's bb84 qbits
-	x = measure_bb84_qbit_list(qbit_list, theta_bob):
+	x = measure_bb84_qbit_list(qbit_list, theta_bob)
 
 	# Send Alice an acknowledge message
 	Bob.sendClassical("Alice", udr.CommId.ReckAck)
@@ -25,7 +25,7 @@ def run_protocol(Bob):
 	Bob.sendClassical("Alice", theta_bob)
 
 	#Discard bits measured in different basis
-	x1 = udr.discard_bits(x, theta_list_alice, theta_list_bob):
+	x1 = udr.discard_bits(x, theta_list_alice, theta_list_bob)
 	n1 = len(x1)
 	if not n1 > 1:
 		print("Bob: only %d bits left after basis check" % n1)
@@ -46,7 +46,7 @@ def run_protocol(Bob):
 		return udr.ProtocolResult.ErrorCheckFailure 
 
 	# Remove test bits from bit string
-	x2 = udr.generate_sublist_removing_idx(x1, idx_test_list):
+	x2 = udr.generate_sublist_removing_idx(x1, idx_test_list)
 	n2 = len(x2)
 	if not x2 > 0:
 		print("Alice: only %d bits left after error check" % n1)
