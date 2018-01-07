@@ -34,14 +34,18 @@ def run_protocol(Eve):
 #
 def main():
 
-	# Initialize the connection
-	Eve=CQCConnection("Eve")
+	try:
 
-	run_protocol(Eve)
+		# Initialize the connection
+		Eve=CQCConnection("Eve")
 
-	# Stop the connection
-	Eve.close()
+		run_protocol(Eve)
 
+		# Stop the connection
+		Eve.close()
+
+	except Exception as e:
+		print("\n ALICE: EXCEPTION: {}".format(e))
 
 ##################################################################################################
 main()

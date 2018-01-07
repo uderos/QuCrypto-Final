@@ -94,23 +94,28 @@ def run_protocol(Alice):
 #
 def main():
 
-	# Initialize the connection
-	Alice = CQCConnection("Alice")
+	try:
 
-	udr.dbg_print("Alice: opening classical channel with Bob")
-	time.sleep(2)
-	Alice.openClassicalChannel("Bob");
-	udr.dbg_print("Alice: classical channel with Bob open")
+		# Initialize the connection
+		Alice = CQCConnection("Alice")
+	
+		udr.dbg_print("Alice: opening classical channel with Bob")
+		time.sleep(2)
+		Alice.openClassicalChannel("Bob");
+		udr.dbg_print("Alice: classical channel with Bob open")
+	
+		# Run the protocol
+		[rc, key] = run_protocol(Alice)
+	
+		# Display results
+		time.sleep(1)
+		udr.print_result("Alice", rc, key)
+	
+		# Stop the connections
+		Alice.close()
 
-	# Run the protocol
-	[rc, key] = run_protocol(Alice)
-
-	# Display results
-	time.sleep(1)
-	udr.print_result("Alice", rc, key)
-
-	# Stop the connections
-	Alice.close()
+	except Exception as e:
+		print("\n ALICE: EXCEPTION: {}".format(e))
 
 
 

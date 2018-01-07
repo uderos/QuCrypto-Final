@@ -80,24 +80,27 @@ def run_protocol(Bob):
 #
 def main():
 
-	# UBEDEBUG - TODO - Catch exceptions !
+	try:
 
-	# Initialize the connection
-	Bob=CQCConnection("Bob")
+		# Initialize the connection
+		Bob=CQCConnection("Bob")
+	
+		udr.dbg_print("Bob: starting classical server")
+		Bob.startClassicalServer()
+		udr.dbg_print("Bob: classical server started")
+	
+		# Run the protocol
+		[rc, key] = run_protocol(Bob)
+	
+		# Display results
+		time.sleep(1)
+		udr.print_result("Bob", rc, key)
+	
+		# Stop the connection
+		Bob.close()
 
-	udr.dbg_print("Bob: starting classical server")
-	Bob.startClassicalServer()
-	udr.dbg_print("Bob: classical server started")
-
-	# Run the protocol
-	[rc, key] = run_protocol(Bob)
-
-	# Display results
-	time.sleep(1)
-	udr.print_result("Bob", rc, key)
-
-	# Stop the connection
-	Bob.close()
+	except Exception as e:
+		print("\n BOB: EXCEPTION: {}".format(e))
 
 
 ##################################################################################################
