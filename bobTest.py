@@ -80,6 +80,8 @@ def run_protocol(Bob):
 #
 def main():
 
+	# UBEDEBUG - TODO - Catch exceptions !
+
 	# Initialize the connection
 	Bob=CQCConnection("Bob")
 
