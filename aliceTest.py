@@ -108,12 +108,13 @@ def main():
 		# Display results
 		time.sleep(1)
 		udr.print_result("Alice", key)
-	
-		# Stop the connections
-		Alice.close()
 
 	except udr.bb84Error as e:
 		print("\n ALICE: ##Protocol Failure## {}".format(e))
+
+	finally:
+		# Stop the connections
+		Alice.close()
 
 
 

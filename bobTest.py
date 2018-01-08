@@ -94,11 +94,13 @@ def main():
 		time.sleep(1)
 		udr.print_result("Bob", key)
 	
+	except udr.bb84Error as e:
+		print("\n BOB: ##Protocol Failure## {}".format(e))
+
+	finally:
 		# Stop the connection
 		Bob.close()
 
-	except udr.bb84Error as e:
-		print("\n BOB: ##Protocol Failure## {}".format(e))
 
 
 ##################################################################################################
