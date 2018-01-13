@@ -1,6 +1,7 @@
 
 from SimulaQron.cqc.pythonLib.cqc import *
 import udr_utils as udr
+from ipcCacClient import ipcCacClient
 
 
 def measure_all_qbits(qbit_list):
@@ -28,7 +29,7 @@ def execute_attack(attack, qbit_list):
 	else:
 		raise RuntimeError("Eve: invalid attack code={}".format(attack))
 
-def run_protocol(Eve):
+def run_protocol(Eve, cacClient):
 
 	# Retrieve test global parameters
 	num_bb84_qbits = udr.get_config_num_qbits()
@@ -60,7 +61,17 @@ def main():
 		# Initialize the connection
 		Eve=CQCConnection("Eve")
 
-		run_protocol(Eve)
+		# Initialize the connection to the Classical Authenticated Channel
+		cacClient = ipcCacClient('Eve')
+		
+		# Tell Alice we are running
+		cacClient.sendAck('Alice')
+
+		# Run the protocol
+		key = None
+		if not udr.get_config_skip_protocol():
+			key = run_protocol(Eve, cacClient)
+	
 
 		# Stop the connection
 		Eve.close()

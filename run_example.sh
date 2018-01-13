@@ -11,6 +11,8 @@ DISABLE_RANDOM=0
 CMD_LINE="$NUM_BB84_QBITS  $ATTACK_TYPE $DISABLE_RANDOM"
 echo "CMD_LINE=[$CMD_LINE]"
 
+python ipcServer.py &
+sleep 1
 python aliceTest.py $CMD_LINE &
 python bobTest.py $CMD_LINE &
 python eveTest.py $CMD_LINE &

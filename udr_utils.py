@@ -10,10 +10,6 @@ from enum import Enum, IntEnum
 
 DBG_PRINT_ENABLED = True
 
-
-# Message identifiers for classical channel communications
-classicCmd_RecvAck = 1
-
 class AttackType(IntEnum):
 	NoAttack = 0,
 	MeasureAllQbits = 1
@@ -65,6 +61,9 @@ def get_config_disable_random():
 		disable_random = int(sys.argv[ArgcValues.ARGC_DISABLE_RANDOM]) > 0
 	return disable_random
 
+def get_config_skip_protocol():
+	return False
+
 def dbg_print(msg):
 	f = open("logfile.txt", "a")
 	f.write("{}\n".format(msg))
@@ -102,14 +101,6 @@ def recv_qbit_list(cqcc_dest, n):
 		qb = cqcc_dest.recvQubit()
 		qbit_list.append(qb)
 	return qbit_list
-
-def recv_classic_list(cqcc_dest):
-	raw_list = cqcc_dest.recvClassical()
-	l = []
-	for i in range(len(raw_list)):
-		l.append(raw_list[i])
-	return l
-
 
 def measure_single_bb84_qbit(qbit, theta):
 	if theta == 1:

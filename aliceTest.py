@@ -2,8 +2,9 @@ import random
 import time
 from SimulaQron.cqc.pythonLib.cqc import *
 import udr_utils as udr
+from ipcCacClient import ipcCacClient
 
-def run_protocol(Alice):
+def run_protocol(Alice, cacClient):
 
 	# Retrieve test global parameters
 	num_bb84_qbits = udr.get_config_num_qbits()
@@ -24,18 +25,15 @@ def run_protocol(Alice):
 
 	# Wait for acknowledge from Bob
 	udr.dbg_print("Alice: waiting for Bob's acknowledge")
-	ack = Alice.recvClassical()[0]
-	if not ack == udr.classicCmd_RecvAck:
-		raise RuntimeError("Alice: invalid ack msg from Bob: {}:{}".
-			format(ack, udr.classicCmd_RecvAck ));
+	cacClient.getAck('Bob')
 	
 	# Send Bob our basis string
 	udr.dbg_print("Alice: sending Bob the basis string")
-	Alice.sendClassical("Bob", theta_alice)
+	cacClient.sendValueList('Bob', theta_alice)
 
 	# Receive Bob's basis string
 	udr.dbg_print("Alice: waiting for Bob basis string")
-	theta_bob = udr.recv_classic_list(Alice)
+	theta_bob = cacClient.getValueList('Bob')
 	udr.dbg_print("Alice: got Bob basis string")
 	udr.dbg_print("Alice: alice_basis={}".format(theta_alice))
 	udr.dbg_print("Alice:   bob_basis={}".format(theta_bob))
@@ -55,14 +53,14 @@ def run_protocol(Alice):
 
 	# Send test string indexes and values to Bob
 	udr.dbg_print("Alice: Sending Bob the test index list")
-	Alice.sendClassical("Bob", idx_test_list)
+	cacClient.sendValueList('Bob', idx_test_list)
 	time.sleep(2)
 	udr.dbg_print("Alice: Sending Bob test bit string")
-	Alice.sendClassical("Bob", xt_alice)
+	cacClient.sendValueList('Bob', xt_alice)
 
 	# Receive test values from Bob and peform error check
 	udr.dbg_print("Alice: waiting for Bob's error checking bit list")
-	xt_bob = udr.recv_classic_list(Alice)
+	xt_bob = cacClient.getValueList('Bob')
 	udr.dbg_print("Alice: xt_alice={}".format(xt_alice))
 	udr.dbg_print("Alice:   xt_bob={}".format(xt_bob))
 	if not xt_alice == xt_bob:
@@ -94,17 +92,21 @@ def main():
 
 	try:
 
-		# Initialize the connection
+		# Initialize the connection to the quantum channel
 		Alice = CQCConnection("Alice")
-	
-		udr.dbg_print("Alice: opening classical channel with Bob")
-		time.sleep(2)
-		Alice.openClassicalChannel("Bob");
-		udr.dbg_print("Alice: classical channel with Bob open")
-	
+
+		# Initialize the connection to the Classical Authenticated Channel
+		cacClient = ipcCacClient('Alice')
+
+		# Be sure Bob and Eve are running
+		cacClient.getAck('Bob')
+		cacClient.getAck('Eve')
+
 		# Run the protocol
-		key = run_protocol(Alice)
-	
+		key = None
+		if not udr.get_config_skip_protocol():
+			key = run_protocol(Alice, cacClient)
+
 		# Display results
 		time.sleep(1)
 		udr.print_result("Alice", key)
@@ -112,9 +114,15 @@ def main():
 	except udr.bb84Error as e:
 		print("\n ALICE: ##Protocol Failure## {}".format(e))
 
+	except Exception as e:
+		print("\n ALICE: ##EXCEPTION## {}".format(e))
+
 	finally:
 		# Stop the connections
 		Alice.close()
+
+		# Alice is in charge of closing the CAC channel as well
+		cacClient.closeChannel()
 
 
 

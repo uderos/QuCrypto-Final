@@ -1,9 +1,11 @@
 import time
 from SimulaQron.cqc.pythonLib.cqc import *
 import udr_utils as udr
+from ipcCacClient import ipcCacClient
 
 
-def run_protocol(Bob):
+def run_protocol(Bob, cacClient):
+
 	# Retrieve test global parameters
 	num_bb84_qbits = udr.get_config_num_qbits()
 
@@ -20,15 +22,15 @@ def run_protocol(Bob):
 
 	# Send Alice an acknowledge message
 	udr.dbg_print("Bob: sending ack to ALice")
-	Bob.sendClassical("Alice", udr.classicCmd_RecvAck )
+	cacClient.sendAck('Alice')
 
 	# Receive Alices's basis string
 	udr.dbg_print("Bob: waiting for Alice basis string")
-	theta_alice = udr.recv_classic_list(Bob)
+	theta_alice = cacClient.getValueList('Alice')
 
 	# Send Alice out basis string
 	udr.dbg_print("Bob: sending Alice my basis string")
-	Bob.sendClassical("Alice", theta_bob)
+	cacClient.sendValueList("Alice", theta_bob)
 
 	#Discard bits measured in different basis
 	x1 = udr.discard_bits(x, theta_alice, theta_bob)
@@ -40,15 +42,15 @@ def run_protocol(Bob):
 
 	# Receive test string indexes and values from Alice
 	udr.dbg_print("Bob: waiting for Alice's test index list")
-	idx_test_list = udr.recv_classic_list(Bob)
+	idx_test_list = cacClient.getValueList('Alice')
 	udr.dbg_print("Bob: waiting for Alice's test bit string")
-	xt_alice = udr.recv_classic_list(Bob)
+	xt_alice = cacClient.getValueList('Alice')
 
 	# Generate the test list and send it to Alice
 	nt = len(idx_test_list)
 	xt_bob = udr.generate_sublist_from_idx(x1, idx_test_list)
 	udr.dbg_print("Bob: sending Alice test list")
-	Bob.sendClassical("Alice", xt_bob)
+	cacClient.sendValueList("Alice", xt_bob)
 
 	# Peform error check
 	if not xt_alice == xt_bob:
@@ -80,15 +82,19 @@ def main():
 
 	try:
 
-		# Initialize the connection
+		# Initialize the connection to the quantum channel
 		Bob=CQCConnection("Bob")
 	
-		udr.dbg_print("Bob: starting classical server")
-		Bob.startClassicalServer()
-		udr.dbg_print("Bob: classical server started")
-	
+		# Initialize the connection to the Classical Authenticated Channel
+		cacClient = ipcCacClient('Bob')
+		
+		# Tell Alice we are running
+		cacClient.sendAck('Alice')
+
 		# Run the protocol
-		key = run_protocol(Bob)
+		key = None
+		if not udr.get_config_skip_protocol():
+			key = run_protocol(Bob, cacClient)
 	
 		# Display results
 		time.sleep(1)
@@ -96,6 +102,9 @@ def main():
 	
 	except udr.bb84Error as e:
 		print("\n BOB: ##Protocol Failure## {}".format(e))
+
+	except Exception as e:
+		print("\n BOB: ##EXCEPTION## {}".format(e))
 
 	finally:
 		# Stop the connection
