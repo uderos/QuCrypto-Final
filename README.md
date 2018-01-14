@@ -17,12 +17,12 @@ The code is also available at:
 
 ## How to run the test
 1.Start SimulaCron:
-Change directory to ~/classes/QuCryptox-2017/src/SimulaQron
-export NETSIM=~/classes/QuCryptox-2017/src
-export PYTHONPATH=classes/QuCryptox-2017/src:$PYTHONPATH
+Change directory to (your-path)/QuCryptox-2017/src/SimulaQron
+export NETSIM=(your-path)/QuCryptox-2017/src
+export PYTHONPATH=(your-path)/QuCryptox-2017/src:$PYTHONPATH
 sh run/startAll.sh
 
-2. From this directory, execuot:
+2. From this directory, execute:
 sh ./run_example.sh
 
 
