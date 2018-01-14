@@ -5,12 +5,14 @@ from ipcCacClient import ipcCacClient
 
 
 def measure_all_qbits(qbit_list):
+	""" Utility function: measure all the qubit of the specified list """
 	udr.dbg_print("Eve: *attack*: measuring all of Alice's qbits")
 	measureInPlace = True
 	for qbit in qbit_list:
 		qbit.measure(measureInPlace)
 	
 def measure_half_qbits(qbit_list):
+	""" Utility function: measure half the qubit of the specified list """
 	udr.dbg_print("Eve: *attack*: measuring 1/2 of Alice's qbits")
 	measureInPlace = True
 	flag = False
@@ -20,6 +22,7 @@ def measure_half_qbits(qbit_list):
 			qbit_list[i].measure(measureInPlace)
 	
 def execute_attack(attack, qbit_list):
+	""" Execute the attack requested by the user via command line """
 	if attack == udr.AttackType.NoAttack:
 		udr.dbg_print("Eve: no attack")
 	elif attack == udr.AttackType.MeasureAllQbits:
@@ -56,7 +59,7 @@ def run_protocol(Eve, cacClient):
 #
 def main():
 
-#	try:
+	try:
 
 		# Initialize the connection
 		Eve=CQCConnection("Eve")
@@ -65,6 +68,7 @@ def main():
 		cacClient = ipcCacClient('Eve')
 		
 		# Tell Alice we are running
+		# (Alice is such a control freak ...)
 		cacClient.sendAck('Alice')
 
 		# Run the protocol
@@ -72,12 +76,13 @@ def main():
 		if not udr.get_config_skip_protocol():
 			key = run_protocol(Eve, cacClient)
 	
+	except Exception as e:
+		print("\n EVE: EXCEPTION: {}".format(e))
 
+
+	finally:
 		# Stop the connection
 		Eve.close()
-
-#	except Exception as e:
-#		print("\n EVE: EXCEPTION: {}".format(e))
 
 ##################################################################################################
 main()

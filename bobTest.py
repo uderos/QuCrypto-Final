@@ -89,6 +89,7 @@ def main():
 		cacClient = ipcCacClient('Bob')
 		
 		# Tell Alice we are running
+		# (Alice is such a control freak ...)
 		cacClient.sendAck('Alice')
 
 		# Run the protocol

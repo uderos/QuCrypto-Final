@@ -99,6 +99,7 @@ def main():
 		cacClient = ipcCacClient('Alice')
 
 		# Be sure Bob and Eve are running
+		# (Alice is a control freak)
 		cacClient.getAck('Bob')
 		cacClient.getAck('Eve')
 
