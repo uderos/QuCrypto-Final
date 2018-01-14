@@ -1,6 +1,23 @@
 # QuCrypto-Final by uders 
 ubehome@gmail.com
 
+## The Protocol
+I have implemented a simple implementation of the basic B84 protocol.
+
+"Basic" means:
+- no information reconciliation
+- no privacy amplification
+- no noisy communications
+
+The protocol implements the BB84 algorithm defined as "**Protocol 1 — BB84 QKD (no noise)**" in sectin 6.1 of Week 6 Lecture Notes.
+
+Step 9 (privacy amplification) is replaced by xoring all the bits, as required in the assignment.
+
+The only interesting thing in this implementation is that it is possible to "program" Eve:
+- Eve can forward Alices's qbits to Bob without touching them
+- Eve can measure 1/2 of the qbits
+- Eve can measure all the qbits
+
 ##Source code
 The code is also available at:
 [GitHub](https://github.com/uderos/QuCrypto-Final)
