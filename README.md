@@ -1,5 +1,5 @@
-# QuCrypto-Final by uders 
-ubehome@gmail.com
+# QuCrypto - Programming Assignment
+by uderos (ubehome@gmail.com)
 
 ## The Protocol
 I have implemented a simple implementation of the basic B84 protocol.
