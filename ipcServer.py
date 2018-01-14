@@ -14,20 +14,17 @@ class ipcServer:
 		self.msg_container = msgContainer.msgContainer()
 		self.server_running_flag = True
 		self.client_running_flag = True
-		self.null_string = "" + chr(0)
 
 
 	def run(self):
 		print("ipcServer is starting")
-		self.__initialize()
-		while self.server_running_flag:
-			try:
+		try:
+			self.__initialize()
+			while self.server_running_flag:
 				session_socket, client_addr = self.server_socket.accept()
 				self.__handle_client_session(session_socket, client_addr)
-			except Exception as e:
-				print("ipcServer EXCEPTION: {}".format(e))
-				self.server_running_flag = False
-		self.__cleanup_at_exit()
+		finally:
+			self.__cleanup_at_exit()
 		print("ipcServer terminates")
 
 
@@ -36,7 +33,7 @@ class ipcServer:
 		self.client_running_flag = True
 		with session_socket:
 			while self.client_running_flag:
-				data_in = self.__recv_data(session_socket)
+				data_in = ipcCommon.recv_data(session_socket)
 				if data_in:
 					self.__process_incoming_message(data_in, session_socket)		
 				else:
@@ -48,21 +45,6 @@ class ipcServer:
 		self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.server_socket.bind((self.tcp_addr, self.tcp_port))
 		self.server_socket.listen(10)
-
-
-	def __recv_data(self, session_socket):
-		data = bytearray()
-		keep_reading = True
-		while keep_reading:
-			keep_reading = False
-			temp_data = session_socket.recv(1024)
-			if temp_data:
-				#keep_reading = True
-				nbytes = len(temp_data)
-				for i in range(nbytes):
-					data.append(temp_data[i])
-				temp_data= None
-		return data
 
 
 	def __process_incoming_message(self, data, session_socket):
@@ -90,21 +72,19 @@ class ipcServer:
 		to_node = fields[2]
 		msg = fields[3]
 		self.msg_container.addMessage(from_node, to_node, msg)
-		#self.msg_container.dump() # UBEDEBUG
 
 
 	def __process_msg_pull_request(self, fields, session_socket):
 		if not len(fields) == 3:
 			print("Invalid msg pull request: '{}'".format(fields))
 			return
-		#self.msg_container.dump() # UBEDEBUG
 		from_node = fields[1]
 		to_node = fields[2]
 		msg = self.msg_container.getMessage(from_node, to_node)
 		if msg is None:
-			msg = self.null_string
+			msg = ""
 		print("ipcServer: ==> '{}'".format(msg))
-		session_socket.sendall(msg.encode())
+		ipcCommon.send_string(session_socket, msg)
 
 
 	def __cleanup_at_exit(self):

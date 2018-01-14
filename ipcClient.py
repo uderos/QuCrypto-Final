@@ -11,14 +11,13 @@ class ipcClient:
 		self.tcp_port = tcp_port
 		self.tcp_socket = None
 		self.buffer_size = 4096
-		self.null_char = chr(0)
 
 	def sendMessage(self, destination, message):
 		self.__connect_to_server()
 		server_msg = "{}|{}|{}|{}".format(
 			ipcCommon.get_cmd_send_message(), self.name, destination, message);
 		print("ipcClient({}) ==> '{}'".format(self.name, server_msg))
-		self.tcp_socket.sendall(server_msg.encode())
+		ipcCommon.send_string(self.tcp_socket, server_msg)
 		self.close()
 
 	def getMessage(self, from_who, timeOut = 5):
@@ -27,32 +26,30 @@ class ipcClient:
 		for i in range(timeOut):
 			self.__connect_to_server()
 			print("ipcClient({}) ==> '{}'".format(self.name, server_msg_out))
-			self.tcp_socket.sendall(server_msg_out.encode())
-			raw_msg_in = self.tcp_socket.recv(self.buffer_size)
+			ipcCommon.send_string(self.tcp_socket, server_msg_out)
+			raw_msg_in = ipcCommon.recv_data(self.tcp_socket)
 			#print("ipcClient({}) RawReply: '{}'".format(self.name, raw_msg_in))
-			if not ((raw_msg_in is None) or (len(raw_msg_in) <= 1)):
+			if not ((raw_msg_in is None) or (len(raw_msg_in) == 0)):
 				msg_in = raw_msg_in.decode()
-				if msg_in[0] == self.null_char:
-					msg_in = None
 				print("ipcClient({}) <== '{}'".format(self.name, msg_in))
+				self.close()
 				return msg_in
 			self.close()
 			time.sleep(1)
-		self.close()
-		return None # TBD - throw exception?
+		return None
 
 	def clearServer(self):
 		self.__connect_to_server()
 		server_msg = ipcCommon.get_cmd_clear_server()
 		print("ipcClient({}) ==> '{}'".format(self.name, server_msg))
-		self.tcp_socket.sendall(server_msg.encode())
+		ipcCommon.send_string(self.tcp_socket, server_msg)
 		self.close()
 
 	def stopServer(self):
 		self.__connect_to_server()
 		server_msg = ipcCommon.get_cmd_stop_server()
 		print("ipcClient({}) ==> '{}'".format(self.name, server_msg))
-		self.tcp_socket.sendall(server_msg.encode())
+		ipcCommon.send_string(self.tcp_socket, server_msg)
 		self.close()
 
 	def close(self):
